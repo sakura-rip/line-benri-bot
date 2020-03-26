@@ -133,7 +133,7 @@ class OperationFunction():
         if self.main.mid in op.param3:
             self.main.sakura.acceptGroupInvitation(op.param1)
             self.main.sakura.sendMessage(
-                op.param1, "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できますn誰でも使用可能なのでお気軽にグループにお誘いください")
+                op.param1, "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください")
 
 
 class MessageFunction():
