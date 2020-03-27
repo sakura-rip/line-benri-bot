@@ -1,5 +1,5 @@
 from linepy import (LINE, OEPoll)
-from akad.ttypes import OpType
+from akad.ttypes import (OpType, MIDType, contentType)
 import re
 import time
 import json
@@ -55,6 +55,14 @@ mid @
             except Exception as e:
                 print(e)
 
+    def check_time(self, to):
+        if to in self.timesleep:
+            if time.time() - self.timesleep[to] < 3:
+                return False
+            else:
+                self.timesleep[to] = time.time()
+                return True
+
 
 class Operation():
     def __init__(self, main):
@@ -87,42 +95,28 @@ class OperationFunction():
 
     def RECEIVE_MESSAGE(self, op):
         msg = op.message
-        if msg.contentType == 0 and msg.toType == 2:
+        if msg.contentType == contentType.NONE and msg.toType == MIDType.GROUP:
             if msg.text in self.main.msgcmd.command:
-                if msg.to in self.main.timesleep:
-                    if time.time() - self.main.timesleep[msg.to] < 3:
-                        return
-                self.main.timesleep[msg.to] = time.time()
-                self.main.msgcmd.command[msg.text.lower()](msg)
+                if self.main.check_time(msg.tp):
+                    self.main.msgcmd.command[msg.text.lower()](msg)
             elif msg.text.startswith(tuple(self.main.msgcmd.startswith_command.keys())):
                 cmds = [
                     x for x in self.main.msgcmd.startswith_command if msg.text.startswith(x)]
-                if cmds:
-                    if msg.to in self.main.timesleep:
-                        if time.time() - self.main.timesleep[msg.to] < 3:
-                            return
-                    self.main.timesleep[msg.to] = time.time()
-                    for a in cmds:
-                        self.main.msgcmd.startswith_command[a](msg)
+                if self.main.check_time(msf.to):
+                    self.main.msgcmd.startswith_command[cmds[0]](msg)
             elif len(msg.text) > 32:
-                if msg.to in self.main.timesleep:
-                    if time.time() - self.main.timesleep[msg.to] < 3:
-                        return
-                self.main.timesleep[msg.to] = time.time()
-                try:
-                    self.main.msgcmd.sendCon(msg)
-                except:
-                    pass
-                try:
-                    self.main.msgcmd.sendGrp(msg)
-                except:
-                    pass
-        elif msg.contentType == 13:
-            if msg.to in self.main.timesleep:
-                if time.time() - self.main.timesleep[msg.to] < 3:
-                    return
-            self.main.timesleep[msg.to] = time.time()
-            self.main.msgcmd.contactInfo(msg)
+                if self.main.check_time(msg.to):
+                    try:
+                        self.main.msgcmd.sendCon(msg)
+                    except:
+                        pass
+                    try:
+                        self.main.msgcmd.sendGrp(msg)
+                    except:
+                        pass
+        elif msg.contentType == contentType.CONTACT:
+            if self.main.check_time(msg.to):
+                self.main.msgcmd.contactInfo(msg)
 
     def NOTIFIED_ADD_CONTACT(self, op):
         pass #ほんとはここにある
@@ -187,15 +181,15 @@ class MessageFunction():
     def sendGrp(self, msg):
         tar = self.getIdFromStr(msg, "gid")
         txt = ""
-        for gid in tar:
-            grp = self.main.sakura.getCompactGroup(gid)
-            url = "OPEN" if not grp.preventedJoinByTicket == True else "CLOSE"
-            txt += f"Group Name : {grp.name}\n"
-            txt += f"Group Invitee : {len(grp.invitee) if grp.invitee else 0}\n"
-            txt += f"Group Members : {len(grp.members)}\n"
-            txt += f"Group Ticket : {url}\n\n"
         if tar:
-            txt += f"Total : {len(tar)}"
+            for gid in tar:
+                grp = self.main.sakura.getCompactGroup(gid)
+                url = "OPEN" if not grp.preventedJoinByTicket == True else "CLOSE"
+                txt += f"Group Name : {grp.name}\n"
+                txt += f"Group Invitee : {len(grp.invitee) if grp.invitee else 0}\n"
+                txt += f"Group Members : {len(grp.members)}\n"
+                txt += f"Group Ticket : {url}\n\n"
+                txt += f"Total : {len(tar)}"
             self.main.sakura.sendMessage(msg.to, txt)
 
     def contactInfo(self, msg):
