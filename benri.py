@@ -1,5 +1,12 @@
-from linepy import (LINE, OEPoll)
-from akad.ttypes import (OpType, MIDType, contentType)
+from linepy import (
+                LINE,
+                OEPoll
+            )
+from akad.ttypes import (
+                OpType,
+                MIDType,
+                contentType
+            )
 import re
 import time
 import json
@@ -119,13 +126,14 @@ class OperationFunction():
                 self.main.msgcmd.contactInfo(msg)
 
     def NOTIFIED_ADD_CONTACT(self, op):
-        pass #ほんとはここにある
+        pass  # ほんとはここにある
 
     def NOTIFIED_INVITE_INTO_GROUP(self, op):
         if self.main.mid in op.param3:
             self.main.sakura.acceptGroupInvitation(op.param1)
             self.main.sakura.sendMessage(
                 op.param1, "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください")
+
 
 class MessageFunction():
     def __init__(self, main):
