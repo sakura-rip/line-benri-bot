@@ -1,6 +1,5 @@
 from linepy import (LINE, OEPoll)
 from akad.ttypes import OpType
-from datetime import datetime
 import re
 import time
 import json
