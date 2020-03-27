@@ -1,4 +1,4 @@
-from linepy import (LINE, OEPoll)
+from linepy import LINE, OEPoll
 from akad.ttypes import OpType
 import re
 import time
@@ -6,7 +6,7 @@ import json
 import requests
 
 
-class Main():
+class Main:
     def __init__(self):
         self.msgcmd = MessageFunction(self)
         self.action = OperationFunction(self)
@@ -56,7 +56,7 @@ mid @
                 print(e)
 
 
-class Operation():
+class Operation:
     def __init__(self, main):
         self.main = main
 
@@ -76,7 +76,7 @@ class Operation():
             print(e)
 
 
-class OperationFunction():
+class OperationFunction:
     def __init__(self, main):
         self.main = main
 
@@ -96,7 +96,10 @@ class OperationFunction():
                 self.main.msgcmd.command[msg.text.lower()](msg)
             elif msg.text.startswith(tuple(self.main.msgcmd.startswith_command.keys())):
                 cmds = [
-                    x for x in self.main.msgcmd.startswith_command if msg.text.startswith(x)]
+                    x
+                    for x in self.main.msgcmd.startswith_command
+                    if msg.text.startswith(x)
+                ]
                 if cmds:
                     if msg.to in self.main.timesleep:
                         if time.time() - self.main.timesleep[msg.to] < 3:
@@ -125,15 +128,18 @@ class OperationFunction():
             self.main.msgcmd.contactInfo(msg)
 
     def NOTIFIED_ADD_CONTACT(self, op):
-        pass #ほんとはここにある
+        pass  # ほんとはここにある
 
     def NOTIFIED_INVITE_INTO_GROUP(self, op):
         if self.main.mid in op.param3:
             self.main.sakura.acceptGroupInvitation(op.param1)
             self.main.sakura.sendMessage(
-                op.param1, "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください")
+                op.param1,
+                "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください",
+            )
 
-class MessageFunction():
+
+class MessageFunction:
     def __init__(self, main):
         self.main = main
         self.command = {
@@ -149,11 +155,9 @@ class MessageFunction():
             "delpoint": self.delpoint,
             "checkread": self.checkpoint,
             "help": self.sendhelp,
-            "url": self.addurl
+            "url": self.addurl,
         }
-        self.startswith_command = {
-            "mid ": self.getmid
-        }
+        self.startswith_command = {"mid ": self.getmid}
 
     def sendhelp(self, msg):
         self.main.sakura.sendMessage(msg.to, self.main.help)
@@ -177,9 +181,13 @@ class MessageFunction():
 
     def addurl(self, msg):
         if self.main.sett.contactMyTicket:
-            self.main.sakura.sendMessage(msg.to, f"line.me/ti/p/{self.main.sett.contactMyTicket}")
+            self.main.sakura.sendMessage(
+                msg.to, f"line.me/ti/p/{self.main.sett.contactMyTicket}"
+            )
         else:
-            self.main.sakura.sendMessage(msg.to, f"line.me/ti/p/{self.main.sakura.reissueUserTicket()}")
+            self.main.sakura.sendMessage(
+                msg.to, f"line.me/ti/p/{self.main.sakura.reissueUserTicket()}"
+            )
 
     def yourMid(self, msg):
         self.main.sakura.sendMessage(msg.to, msg._from)
@@ -199,8 +207,8 @@ class MessageFunction():
             self.main.sakura.sendMessage(msg.to, txt)
 
     def contactInfo(self, msg):
-        if 'displayName' in msg.contentMetadata:
-            mid = msg.contentMetadata['mid']
+        if "displayName" in msg.contentMetadata:
+            mid = msg.contentMetadata["mid"]
             con = self.main.sakura.getContact(mid)
             txt = f"mid : {mid}\ndisplayName : {con.displayName}"
             self.main.sakura.sendMessage(msg.to, txt)
@@ -251,7 +259,10 @@ class MessageFunction():
         self.main.sakura.sendMessage(msg.to, msg.to)
 
     def gurl(self, msg):
-        self.main.sakura.sendMessage(msg.to, f"https://line.me/R/ti/g/{self.main.sakura.reissueGroupTicket(msg.to)}")
+        self.main.sakura.sendMessage(
+            msg.to,
+            f"https://line.me/R/ti/g/{self.main.sakura.reissueGroupTicket(msg.to)}",
+        )
 
     def ourl(self, msg):
         grp = self.main.sakura.getGroup(msg.to)
@@ -279,6 +290,6 @@ class MessageFunction():
             self.main.sakura.sendMessage(msg.to, "削除済みです")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main = Main()
     main.running()
