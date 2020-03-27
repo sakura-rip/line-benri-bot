@@ -6,6 +6,11 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+requests = "*"
+linepy = "*"
 
 [requires]
 python_version = "3.8"
+
+[scripts]
+start = "python benri.py"
