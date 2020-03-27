@@ -45,7 +45,6 @@ mid @
         self.timesleep = {}
         self.checkread = {}
 
-
     def running(self):
         while True:
             try:
@@ -127,14 +126,13 @@ class OperationFunction():
             self.main.msgcmd.contactInfo(msg)
 
     def NOTIFIED_ADD_CONTACT(self, op):
-        pass #消した
+        pass #ほんとはここにある
 
     def NOTIFIED_INVITE_INTO_GROUP(self, op):
         if self.main.mid in op.param3:
             self.main.sakura.acceptGroupInvitation(op.param1)
             self.main.sakura.sendMessage(
                 op.param1, "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください")
-
 
 class MessageFunction():
     def __init__(self, main):
@@ -260,15 +258,17 @@ class MessageFunction():
         grp = self.main.sakura.getGroup(msg.to)
         if grp.preventedJoinByTicket:
             grp.preventedJoinByTicket = False
-            self.main.sakura.sendMessage(msg.to, "閉じました")
+            self.main.sakura.updateGroup(grp)
+            self.main.sakura.sendMessage(msg.to, "開きました")
         else:
-            self.main.sakura.sendMessage(msg.to, "既に閉じています")
+            self.main.sakura.sendMessage(msg.to, "既に開いています")
 
     def curl(self, msg):
         grp = self.main.sakura.getGroup(msg.to)
         if grp.preventedJoinByTicket == False:
             grp.preventedJoinByTicket = True
-            self.main.sakura.sendMessage(msg.to, "開きました")
+            self.main.sakura.updateGroup(grp)
+            self.main.sakura.sendMessage(msg.to, "閉じました")
         else:
             self.main.sakura.sendMessage(msg.to, "既に閉じています")
 
