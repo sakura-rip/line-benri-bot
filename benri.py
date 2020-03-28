@@ -5,7 +5,7 @@ from linepy import (
 from akad.ttypes import (
     OpType,
     MIDType,
-    contentType
+    ContentType
 )
 import re
 import time
