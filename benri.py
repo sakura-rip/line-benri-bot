@@ -102,7 +102,7 @@ class OperationFunction():
 
     def RECEIVE_MESSAGE(self, op):
         msg = op.message
-        if msg.contentType == contentType.NONE and msg.toType == MIDType.GROUP:
+        if msg.contentType == ContentType.NONE and msg.toType == MIDType.GROUP:
             if msg.text in self.main.msgcmd.command:
                 if self.main.check_time(msg.tp):
                     self.main.msgcmd.command[msg.text.lower()](msg)
@@ -121,7 +121,7 @@ class OperationFunction():
                         self.main.msgcmd.sendGrp(msg)
                     except:
                         pass
-        elif msg.contentType == contentType.CONTACT:
+        elif msg.contentType == ContentType.CONTACT:
             if self.main.check_time(msg.to):
                 self.main.msgcmd.contactInfo(msg)
 
