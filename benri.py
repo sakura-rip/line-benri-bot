@@ -1,19 +1,12 @@
-from linepy import (
-    LINE,
-    OEPoll
-)
-from akad.ttypes import (
-    OpType,
-    MIDType,
-    ContentType
-)
+from linepy import LINE, OEPoll
+from akad.ttypes import OpType, MIDType, ContentType
 import re
 import time
 import json
 import requests
 
 
-class Main():
+class Main:
     def __init__(self):
         self.msgcmd = MessageFunction(self)
         self.action = OperationFunction(self)
@@ -71,7 +64,7 @@ mid @
                 return True
 
 
-class Operation():
+class Operation:
     def __init__(self, main):
         self.main = main
 
@@ -91,7 +84,7 @@ class Operation():
             print(e)
 
 
-class OperationFunction():
+class OperationFunction:
     def __init__(self, main):
         self.main = main
 
@@ -108,7 +101,10 @@ class OperationFunction():
                     self.main.msgcmd.command[msg.text.lower()](msg)
             elif msg.text.startswith(tuple(self.main.msgcmd.startswith_command.keys())):
                 cmds = [
-                    x for x in self.main.msgcmd.startswith_command if msg.text.startswith(x)]
+                    x
+                    for x in self.main.msgcmd.startswith_command
+                    if msg.text.startswith(x)
+                ]
                 if self.main.check_time(msf.to):
                     self.main.msgcmd.startswith_command[cmds[0]](msg)
             elif len(msg.text) > 32:
@@ -132,11 +128,12 @@ class OperationFunction():
         if self.main.mid in op.param3:
             self.main.sakura.acceptGroupInvitation(op.param1)
             self.main.sakura.sendMessage(
-                op.param1, "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください"
+                op.param1,
+                "はじめまして!!\n便利ボットです\n連投対策として3秒間の空きが必要です\nコマンドはhelpで確認できます\n誰でも使用可能なのでお気軽にグループにお誘いください",
             )
 
 
-class MessageFunction():
+class MessageFunction:
     def __init__(self, main):
         self.main = main
         self.command = {
@@ -152,11 +149,9 @@ class MessageFunction():
             "delpoint": self.delpoint,
             "checkread": self.checkpoint,
             "help": self.sendhelp,
-            "url": self.addurl
+            "url": self.addurl,
         }
-        self.startswith_command = {
-            "mid ": self.getmid
-        }
+        self.startswith_command = {"mid ": self.getmid}
 
     def sendhelp(self, msg):
         self.main.sakura.sendMessage(msg.to, self.main.help)
@@ -259,7 +254,8 @@ class MessageFunction():
 
     def gurl(self, msg):
         self.main.sakura.sendMessage(
-            msg.to, f"https://line.me/R/ti/g/{self.main.sakura.reissueGroupTicket(msg.to)}"
+            msg.to,
+            f"https://line.me/R/ti/g/{self.main.sakura.reissueGroupTicket(msg.to)}",
         )
 
     def ourl(self, msg):
